@@ -12,7 +12,7 @@
  *  - Cuando se detecta una actualización, se activa automáticamente (skipWaiting + clients.claim).
  */
 
-const VERSION = 'v1.0.0';
+const VERSION = 'v1.0.1';
 const CACHE_NAME = `reposorter-${VERSION}`;
 const APP_SHELL = [
   './',
