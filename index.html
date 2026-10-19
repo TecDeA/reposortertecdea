@@ -272,6 +272,10 @@
           <i class="fa-solid fa-file-export text-sm"></i>
           <span>Exportar Datos</span>
         </button>
+        <button onclick="clearRepos()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs transition flex items-center gap-2 shadow-lg shadow-rose-600/20">
+          <i class="fa-solid fa-trash-can text-sm"></i>
+          <span>Eliminar datos</span>
+        </button>
       </div>
     </section>
 
@@ -632,6 +636,16 @@
     function clearSearch() {
       document.getElementById('searchInput').value = '';
       handleSearch();
+    }
+
+    function clearRepos() {
+      rawRepos = [];
+      currentSource = 'Ninguno';
+      searchQuery = '';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      render();
+      showToast('Datos eliminados correctamente', 'success');
     }
 
     function fetchFromQuickInput() {
