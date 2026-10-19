@@ -14,6 +14,13 @@
 
 const VERSION = 'v1.0.1';
 const CACHE_NAME = `reposorter-${VERSION}`;
+
+// Exponer la versión del worker a las páginas controladas que la soliciten.
+self.addEventListener('message', (event) => {
+  if (event.data !== 'GET_VERSION' || !event.ports?.[0]) return;
+  event.ports[0].postMessage({ version: VERSION });
+});
+
 const APP_SHELL = [
   './',
   './index.html',
