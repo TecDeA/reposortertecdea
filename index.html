@@ -104,7 +104,7 @@
           <i class="fa-brands fa-github text-2xl text-slate-950"></i>
         </div>
         <div>
-          <h1 class="font-bold text-lg leading-tight text-slate-100">RepoSorter <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 ml-2">JSON Tool</span></h1>
+          <h1 class="font-bold text-lg leading-tight text-slate-100">RepoSorter <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 ml-2">JSON Tool</span> <span id="appVersion" class="hidden text-xs font-normal px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700" aria-label="Versión de la app"></span></h1>
           <p class="text-xs text-slate-400">Ordenador alfabético e importador de repositorios</p>
         </div>
       </div>
@@ -1170,12 +1170,29 @@
        nada del portal padre (https://tecdea.github.io/).
        ============================================================ */
     if ('serviceWorker' in navigator) {
+      function showServiceWorkerVersion(worker) {
+        if (!worker) return;
+        const channel = new MessageChannel();
+        channel.port1.onmessage = ({ data }) => {
+          if (!data?.version) return;
+          const badge = document.getElementById('appVersion');
+          badge.textContent = data.version;
+          badge.classList.remove('hidden');
+        };
+        worker.postMessage('GET_VERSION', [channel.port2]);
+      }
+
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        showServiceWorkerVersion(navigator.serviceWorker.controller);
+      });
+
       window.addEventListener('load', () => {
         // Ruta relativa → se resuelve contra la URL del documento, así el
         // scope queda acotado al subdirectorio de la PWA.
         navigator.serviceWorker.register('sw.js', { scope: './' })
           .then((reg) => {
             console.info('[RepoSorter PWA] Service Worker registrado con scope:', reg.scope);
+            showServiceWorkerVersion(navigator.serviceWorker.controller || reg.active);
 
             // Detectar actualizaciones del SW y aplicarlas en caliente
             reg.addEventListener('updatefound', () => {
