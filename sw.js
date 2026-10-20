@@ -12,7 +12,7 @@
  *  - Cuando se detecta una actualización, se activa automáticamente (skipWaiting + clients.claim).
  */
 
-const VERSION = 'v1.1.0';
+const VERSION = 'v1.2.0';
 const CACHE_NAME = `reposorter-${VERSION}`;
 
 // Exponer la versión del worker a las páginas controladas que la soliciten.
