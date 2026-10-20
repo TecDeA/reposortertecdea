@@ -104,7 +104,7 @@
           <i class="fa-brands fa-github text-2xl text-slate-950"></i>
         </div>
         <div>
-          <h1 class="font-bold text-lg leading-tight text-slate-100">RepoSorter <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 ml-2">JSON Tool</span> <span id="appVersion" class="hidden text-xs font-normal px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700" aria-label="Versión de la app"></span></h1>
+          <h1 class="font-bold text-lg leading-tight text-slate-100">RepoSorter <span id="appVersion" class="hidden text-xs font-normal px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700" aria-label="Versión de la app"></span></h1>
           <p class="text-xs text-slate-400">Ordenador alfabético e importador de repositorios</p>
         </div>
       </div>
@@ -119,15 +119,6 @@
           <i class="fa-brands fa-github text-emerald-400"></i>
           <span class="hidden sm:inline">Importar Org / URL</span>
           <span class="sm:hidden">Org/URL</span>
-        </button>
-        <button onclick="loadSampleData()" class="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition border border-slate-700 flex items-center gap-2">
-          <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
-          <span class="hidden sm:inline">Cargar Datos de Muestra</span>
-          <span class="sm:hidden">Muestra</span>
-        </button>
-        <button onclick="openPasteModal()" class="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition border border-slate-700 flex items-center gap-2">
-          <i class="fa-solid fa-code text-blue-400"></i>
-          <span class="hidden sm:inline">Pegar JSON</span>
         </button>
       </div>
     </div>
@@ -272,7 +263,7 @@
           <i class="fa-solid fa-file-export text-sm"></i>
           <span>Exportar Datos</span>
         </button>
-        <button onclick="clearRepos()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs transition flex items-center gap-2 shadow-lg shadow-rose-600/20">
+        <button onclick="confirmClearRepos()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-xs transition flex items-center gap-2 shadow-lg shadow-rose-600/20">
           <i class="fa-solid fa-trash-can text-sm"></i>
           <span>Eliminar datos</span>
         </button>
@@ -421,23 +412,41 @@
     </div>
   </div>
 
-  <!-- Raw JSON Modal -->
-  <div id="jsonModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+  <!-- Confirm Clear Data Modal -->
+  <div id="confirmClearModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
       <div class="p-4 border-b border-slate-800 flex items-center justify-between">
         <h3 class="font-semibold text-slate-200 text-sm flex items-center gap-2">
-          <i class="fa-solid fa-code text-brand-400"></i> Pegar contenido JSON
+          <i class="fa-solid fa-triangle-exclamation text-rose-400 text-base"></i>
+          <span>Confirmar eliminación</span>
         </h3>
-        <button onclick="closePasteModal()" class="text-slate-400 hover:text-slate-200">
+        <button onclick="closeConfirmClearModal()" class="text-slate-400 hover:text-slate-200">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <div class="p-4 flex-1">
-        <textarea id="jsonTextArea" rows="12" placeholder='[{"name": "ejemplo", "url": "https://github.com/..."}]' class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-brand-500 transition resize-none h-full"></textarea>
+      <div class="p-5 space-y-3 text-xs">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-trash-can text-lg"></i>
+          </div>
+          <div class="flex-1 text-slate-300">
+            <p class="font-medium text-slate-200">¿Seguro que deseas eliminar todos los datos cargados?</p>
+            <p class="text-[11px] text-slate-400 mt-1.5 leading-relaxed">
+              Se borrarán <strong id="confirmClearCount" class="text-rose-400 font-bold">0</strong> repositorios de la sesión actual, así como el término de búsqueda activo. Esta acción no se puede deshacer.
+            </p>
+          </div>
+        </div>
+        <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 text-[11px] text-slate-400 flex items-center gap-2">
+          <i class="fa-solid fa-circle-info text-blue-400"></i>
+          <span>Los archivos exportados previamente no se verán afectados.</span>
+        </div>
       </div>
       <div class="p-4 border-t border-slate-800 flex justify-end space-x-2">
-        <button onclick="closePasteModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800 transition">Cancelar</button>
-        <button onclick="processPastedJSON()" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-950 bg-brand-500 hover:bg-brand-400 transition font-semibold">Cargar JSON</button>
+        <button onclick="closeConfirmClearModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800 transition border border-slate-700">Cancelar</button>
+        <button onclick="clearRepos()" class="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 transition flex items-center gap-2 shadow-lg shadow-rose-600/20">
+          <i class="fa-solid fa-trash-can"></i>
+          <span>Sí, eliminar</span>
+        </button>
       </div>
     </div>
   </div>
@@ -446,62 +455,15 @@
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
-    // Sample dataset provided by user
-    const sampleRepos = [
-      {"name":"tecdea.github.io","url":"https://github.com/TecDeA/tecdea.github.io"},
-      {"name":"funciongamma","url":"https://github.com/TecDeA/funciongamma"},
-      {"name":"fraccionesequivalentes","url":"https://github.com/TecDeA/fraccionesequivalentes"},
-      {"name":"autovaloresyautovectores","url":"https://github.com/TecDeA/autovaloresyautovectores"},
-      {"name":"hooke","url":"https://github.com/TecDeA/hooke"},
-      {"name":"distancia2puntoscuadrado","url":"https://github.com/TecDeA/distancia2puntoscuadrado"},
-      {"name":"cursoarduino","url":"https://github.com/TecDeA/cursoarduino"},
-      {"name":"analisisbjt","url":"https://github.com/TecDeA/analisisbjt"},
-      {"name":"calificatec4","url":"https://github.com/TecDeA/calificatec4"},
-      {"name":"ledemisorreceptor","url":"https://github.com/TecDeA/ledemisorreceptor"},
-      {"name":"matrices","url":"https://github.com/TecDeA/matrices"},
-      {"name":"montajesbjt","url":"https://github.com/TecDeA/montajesbjt"},
-      {"name":"distancia2puntos","url":"https://github.com/TecDeA/distancia2puntos"},
-      {"name":"constantecatalan","url":"https://github.com/TecDeA/constantecatalan"},
-      {"name":"tablerokanban","url":"https://github.com/TecDeA/tablerokanban"},
-      {"name":"unidadpresentacionascensor","url":"https://github.com/TecDeA/unidadpresentacionascensor"},
-      {"name":"tdvhex","url":"https://github.com/TecDeA/tdvhex"},
-      {"name":"sorteoalumnado","url":"https://github.com/TecDeA/sorteoalumnado"},
-      {"name":"correlaciontec4","url":"https://github.com/TecDeA/correlaciontec4"},
-      {"name":"tec4evalinic","url":"https://github.com/TecDeA/tec4evalinic"},
-      {"name":"rubricas","url":"https://github.com/TecDeA/rubricas"},
-      {"name":"rubricastecnov2","url":"https://github.com/TecDeA/rubricastecnov2"},
-      {"name":"seguimientopra","url":"https://github.com/TecDeA/seguimientopra"},
-      {"name":"clemasv2","url":"https://github.com/TecDeA/clemasv2"},
-      {"name":"clemasv1","url":"https://github.com/TecDeA/clemasv1"},
-      {"name":"matricesdirac","url":"https://github.com/TecDeA/matricesdirac"},
-      {"name":"notacionpolaca","url":"https://github.com/TecDeA/notacionpolaca"},
-      {"name":"classroomtoapps","url":"https://github.com/TecDeA/classroomtoapps"},
-      {"name":"cielocharlieplexing","url":"https://github.com/TecDeA/cielocharlieplexing"},
-      {"name":"byteantiguo","url":"https://github.com/TecDeA/byteantiguo"},
-      {"name":"fraccionescontinuas","url":"https://github.com/TecDeA/fraccionescontinuas"},
-      {"name":"numerosmetalicos","url":"https://github.com/TecDeA/numerosmetalicos"},
-      {"name":"problemasedi","url":"https://github.com/TecDeA/problemasedi"},
-      {"name":"evalcompesptec4","url":"https://github.com/TecDeA/evalcompesptec4"},
-      {"name":"problemasean","url":"https://github.com/TecDeA/problemasean"},
-      {"name":"isustopra","url":"https://github.com/TecDeA/isustopra"},
-      {"name":"practicasab","url":"https://github.com/TecDeA/practicasab"},
-      {"name":"tdvkarnaugh","url":"https://github.com/TecDeA/tdvkarnaugh"},
-      {"name":"arduinoacademy","url":"https://github.com/TecDeA/arduinoacademy"},
-      {"name":"calculosean","url":"https://github.com/TecDeA/calculosean"},
-      {"name":"diariotec4","url":"https://github.com/TecDeA/diariotec4"}
-    ];
-
     // State Application
     let rawRepos = [];
     let currentSort = 'asc'; // 'asc', 'desc', 'original'
     let currentView = 'grid'; // 'grid', 'table'
     let searchQuery = '';
-    let currentSource = 'Muestra';
+    let currentSource = 'Ninguno';
 
     window.addEventListener('DOMContentLoaded', () => {
       setupDragAndDrop();
-      // Auto-load sample data for immediate interactive experience
-      loadSampleData(false);
     });
 
     function setupDragAndDrop() {
@@ -582,13 +544,6 @@
       render();
     }
 
-    function loadSampleData(notify = true) {
-      validateAndSetRepos(sampleRepos, 'Datos de Muestra');
-      if (notify) {
-        showToast('Datos de muestra cargados correctamente', 'success');
-      }
-    }
-
     function getProcessedRepos() {
       let filtered = rawRepos.filter(repo => {
         if (!searchQuery) return true;
@@ -638,6 +593,22 @@
       handleSearch();
     }
 
+    function confirmClearRepos() {
+      if (rawRepos.length === 0) {
+        showToast('No hay datos para eliminar', 'info');
+        return;
+      }
+      const modal = document.getElementById('confirmClearModal');
+      const countEl = document.getElementById('confirmClearCount');
+      if (countEl) countEl.textContent = rawRepos.length;
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function closeConfirmClearModal() {
+      const modal = document.getElementById('confirmClearModal');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+    }
+
     function clearRepos() {
       rawRepos = [];
       currentSource = 'Ninguno';
@@ -645,6 +616,7 @@
       document.getElementById('searchInput').value = '';
       document.getElementById('clearSearchBtn').classList.add('hidden');
       render();
+      closeConfirmClearModal();
       showToast('Datos eliminados correctamente', 'success');
     }
 
@@ -1070,16 +1042,6 @@
       `;
     }
 
-    function openPasteModal() {
-      const modal = document.getElementById('jsonModal');
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-    }
-
-    function closePasteModal() {
-      const modal = document.getElementById('jsonModal');
-      modal.classList.add('opacity-0', 'pointer-events-none');
-    }
-
     function openOrgModal() {
       const modal = document.getElementById('orgModal');
       modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -1095,25 +1057,6 @@
       const chevron = document.getElementById('tokenChevron');
       container.classList.toggle('hidden');
       chevron.classList.toggle('rotate-180');
-    }
-
-    function processPastedJSON() {
-      const area = document.getElementById('jsonTextArea');
-      const val = area.value.trim();
-
-      if (!val) {
-        showToast('El área de texto está vacía', 'error');
-        return;
-      }
-
-      try {
-        const parsed = JSON.parse(val);
-        validateAndSetRepos(parsed, 'Texto pegado');
-        closePasteModal();
-        area.value = '';
-      } catch (e) {
-        showToast('JSON sintácticamente inválido', 'error');
-      }
     }
 
     function copyToClipboard(text, msg = 'Copiado al portapapeles') {
@@ -1236,7 +1179,6 @@
 
     /* ============================================================
        PWA: Soporte para "shortcuts" del manifest
-       - ?action=sample  → carga datos de muestra al iniciar
        - ?action=import  → abre el modal de importación de GitHub
        ============================================================ */
     (function applyPwaShortcut() {
@@ -1246,13 +1188,9 @@
         if (!action) return;
 
         window.addEventListener('DOMContentLoaded', () => {
-          // Dar tiempo a que loadSampleData automático del DOMContentLoaded
-          // termine primero; usamos setTimeout para no pisar su toast.
           setTimeout(() => {
             if (action === 'import') {
               if (typeof openOrgModal === 'function') openOrgModal();
-            } else if (action === 'sample') {
-              if (typeof loadSampleData === 'function') loadSampleData(true);
             }
           }, 200);
         });
